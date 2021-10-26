@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">InspectionReport</string>
+    <string name="date">Data</string>
+    <string name="company">Empresa</string>
+    <string name="sanitarian">Sanitarista</string>
+    <string name="note">Comentário</string>
+    <string name="format_date">dd/MM/yyyy</string>
+    <string name="msg_error_company">Insira o nome da empresa.</string>
+    <string name="msg_error_sanitarian">Insira o nome do(a) sanitarista.</string>
+    <string name="msg_error_default">error</string>
+</resources>
