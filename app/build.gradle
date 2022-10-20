@@ -38,7 +38,7 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion compose_version
-        kotlinCompilerVersion '1.5.21'
+        kotlinCompilerVersion '1.5.31'
     }
     packagingOptions {
         resources {
@@ -56,10 +56,10 @@ dependencies {
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.1'
-    implementation 'androidx.activity:activity-compose:1.3.0-alpha06'
+    implementation 'androidx.activity:activity-compose:1.4.0-rc01'
 
     // Navigation
-    implementation "androidx.navigation:navigation-compose:2.4.0-alpha10"
+    implementation "androidx.navigation:navigation-compose:2.4.0-alpha06"
 
     // accompanist navigation animation
     implementation "com.google.accompanist:accompanist-navigation-animation:0.16.0"

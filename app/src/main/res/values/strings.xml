@@ -8,4 +8,9 @@
     <string name="msg_error_company">Insira o nome da empresa.</string>
     <string name="msg_error_sanitarian">Insira o nome do(a) sanitarista.</string>
     <string name="msg_error_default">error</string>
+    <string name="dialog_btn_confirm">confirmar</string>
+    <string name="dialog_btn_cancel">cancelar</string>
+    <string name="salve">salvar</string>
+    <string name="delete">deletar</string>
+    <string name="screen_name_create_report">Criar Relatório</string>
 </resources>

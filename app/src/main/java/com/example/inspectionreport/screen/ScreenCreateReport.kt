@@ -1,6 +1,7 @@
 package com.example.inspectionreport.screen
 
 import android.app.DatePickerDialog
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -8,8 +9,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,36 +20,106 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.inspectionreport.R
-import com.example.inspectionreport.model.Screen
 import com.example.inspectionreport.model.Report
 import com.example.inspectionreport.ui.theme.InspectionReportTheme
 import com.example.inspectionreport.util.datePickerDialog
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
+import com.example.inspectionreport.ui.theme.backgroundColor
+import com.example.inspectionreport.util.ShowAlertDialog
+import com.example.inspectionreport.util.formatDate
+import com.example.inspectionreport.util.getToday
 
+@ExperimentalAnimationApi
 @Composable
 fun ScreenCreateReport(navController: NavHostController, report: Report) {
+
+    var showMenu by remember { mutableStateOf(false) }
+    val showDialog = remember { mutableStateOf(false) }
+    val type = remember { mutableStateOf(0) }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Criar Relatório") },
-                backgroundColor = MaterialTheme.colors.primary,
+                title = { Text(stringResource(R.string.screen_name_create_report)) },
+                backgroundColor = MaterialTheme.colors.surface,
+                actions = {
+                    IconButton(onClick = { showMenu = !showMenu }) {
+                        Icon(Icons.Default.MoreVert, "menu")
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(onClick = {
+                            showMenu = false
+                            showDialog.value = true
+                            type.value = 1
+                        }) {
+                            Text(text = stringResource(R.string.salve))
+                        }
+                        DropdownMenuItem(onClick = {
+                            showMenu = false
+                            showDialog.value = true
+                            type.value = 2
+                        }) {
+                            Text(text = stringResource(R.string.delete))
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            navController.navigate(Screen.REPORT_LIST.route)
+                            navController.popBackStack()
                         }) {
                         Icon(Icons.Filled.ArrowBack, "voltar")
                     }
                 },
             )
         },
+        floatingActionButtonPosition = FabPosition.End,
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    // Open Camera
+                },
+                backgroundColor = MaterialTheme.colors.primary
+            ) {
+                Icon(painter = painterResource(id = R.drawable.ic_baseline_photo_camera_24), contentDescription = "camera" )
+            }
+        },
         content = {
             FillTextField(report)
+            val title: String
+            val description: String
+
+            when(type.value) {
+                1 -> {
+                    title = "Salvar"
+                    description = "Deseja salvar o relatório?"
+                } else -> {
+                    title = "Deletar"
+                    description = "Deseja deletar o relatório?"
+                }
+            }
+            ShowAlertDialog(
+                showDialog,
+                title = title,
+                text = description,
+                onConfirm = { salveReport(navController/*, viewModel*/) },
+                onDismiss = { })
         },
     )
+}
+
+fun salveReport(navController: NavHostController) {
+    /*viewModel.saveReport()*/
+    navController.popBackStack()
 }
 
 @Composable
@@ -57,15 +127,17 @@ fun FillTextField(report: Report) {
 
     val scrollState = rememberScrollState()
 
-    Column(modifier = Modifier
-        .verticalScroll(state = scrollState)
-        .fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .verticalScroll(state = scrollState)
+            .fillMaxSize()
+    ) {
         val context = LocalContext.current
         val myCalendar = Calendar.getInstance()
 
         var company by remember { mutableStateOf(report.company) }
         var sanitarian by remember { mutableStateOf(report.sanitarian) }
-        var date by remember { mutableStateOf(report.date) }
+        var date by remember { mutableStateOf(formatDate(report.date)) }
         var note by remember { mutableStateOf(report.note) }
 
         var inputErrorCompany by remember { mutableStateOf(false) }
@@ -184,7 +256,7 @@ fun FillTextField(report: Report) {
                 imeAction = ImeAction.Next
             ),
         )
-        Box(modifier = Modifier.fillMaxWidth()){
+        Box(modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = "${note.length}/120",
                 style = MaterialTheme.typography.caption,
@@ -217,11 +289,12 @@ private fun BoxInteraction(error: Boolean, maxChar: String, msgError: Int) {
     }
 }
 
+@ExperimentalAnimationApi
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreviewCreate() {
-    val report = Report(1, "Google", "Renderson","Observação vazia","19-02-2022")
-    val navController = rememberNavController()
+    val report = Report(1, "Google", "Renderson", "Observação vazia", getToday())
+    val navController = rememberAnimatedNavController()
 
     InspectionReportTheme {
         ScreenCreateReport(navController, report)
